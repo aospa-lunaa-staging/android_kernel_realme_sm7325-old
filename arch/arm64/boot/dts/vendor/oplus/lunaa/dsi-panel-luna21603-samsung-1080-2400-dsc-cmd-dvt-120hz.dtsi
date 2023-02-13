@@ -813,6 +813,25 @@
             <460 0x12>,
             <520 0x00>;
 
+
+    oplus,dsi-aod-high-brightness = <4 180>,
+                <13 168>,
+                <21 152>,
+                <29 135>,
+                <37 122>,
+                <53 104>,
+                <69 90>,
+                <85 76>,
+                <101 66>,
+                <117 55>,
+                <133 44>;
+
+    oplus,dsi-aod-low-brightness = <4 108>,
+               <13 70>,
+               <21 54>;
+
+    oplus,dsi-aod-low-brightness-threshold = <21>;
+
     oplus,dsi-brightness-remapping = <4    4>,
             <61   5>,
             <100  8>,
