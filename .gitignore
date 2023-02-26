@@ -149,3 +149,9 @@ x509.genkey
 
 # vendor device tree directories
 arch/arm/boot/dts/vendor
+
+# Toolchains
+work/
+
+# Final output of kernel zip
+topaz*.zip
