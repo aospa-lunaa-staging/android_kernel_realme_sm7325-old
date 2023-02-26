@@ -714,9 +714,9 @@ do {									\
  */
 
 #ifdef CONFIG_DISABLE_TRACE_PRINTK
-#define trace_printk pr_debug
+void trace_printk(const char *fmt, ...);
 #else
-#define trace_printk(fmt, ...)				\
+#define trace_printk(fmt, ...)					\
 do {							\
 	char _______STR[] = __stringify((__VA_ARGS__));	\
 	if (sizeof(_______STR) > 3)			\
