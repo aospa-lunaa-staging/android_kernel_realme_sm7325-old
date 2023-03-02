@@ -155,3 +155,7 @@ work/
 
 # Final output of kernel zip
 topaz*.zip
+
+# Kernel building script
+buildkernel.sh
+
