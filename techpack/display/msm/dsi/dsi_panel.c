@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
  * Copyright (c) 2016-2021, The Linux Foundation. All rights reserved.
  */
 
@@ -596,10 +595,6 @@ static int dsi_panel_power_off(struct dsi_panel *panel)
 {
 	int rc = 0;
 
-	if (panel->is_twm_en || panel->skip_panel_off) {
-		DSI_DEBUG("TWM Enabled, skip panel power off\n");
-		return rc;
-	}
 #if IS_ENABLED(CONFIG_TOUCHPANEL_OPLUS)
 /*#ifdef OPLUS_FEATURE_TP_BASIC*/
 	int mode = 0;
@@ -609,7 +604,7 @@ static int dsi_panel_power_off(struct dsi_panel *panel)
 #endif
 
 #ifdef OPLUS_BUG_STABILITY
-	pr_err("debug for dsi_panel_power_off\n");
+	pr_err ("debug for dsi_panel_power_off\n");
 	nolp_state = 0;
 
 	if (panel->oplus_priv.pre_bl_delay_enabled) {
@@ -1652,18 +1647,6 @@ static int dsi_panel_parse_pixel_format(struct dsi_host_common_cfg *host,
 		break;
 	case 18:
 		fmt = DSI_PIXEL_FORMAT_RGB666;
-		break;
-	case 30:
-		/*
-		 * The destination pixel format (host->dst_format) depends
-		 * upon the compression, and should be RGB888 if the DSC is
-		 * enable.
-		 * The DSC status information is inside the timing modes, that
-		 * is parsed during first dsi_display_get_modes() call.
-		 * The dst_format will be updated there depending upon the
-		 * DSC status.
-		 */
-		fmt = DSI_PIXEL_FORMAT_RGB101010;
 		break;
 	case 24:
 	default:
@@ -2973,9 +2956,6 @@ static int dsi_panel_parse_misc_features(struct dsi_panel *panel)
 
 	panel->reset_gpio_always_on = utils->read_bool(utils->data,
 			"qcom,platform-reset-gpio-always-on");
-
-	panel->skip_panel_off = utils->read_bool(utils->data,
-			"qcom,skip-panel-power-off");
 
 	panel->spr_info.enable = false;
 	panel->spr_info.pack_type = MSM_DISPLAY_SPR_TYPE_MAX;
@@ -5508,10 +5488,6 @@ int dsi_panel_set_nolp(struct dsi_panel *panel)
 	pr_err("debug for dsi_panel_set_nolp\n");
 #endif
 
-	if (panel->is_twm_en) {
-		DSI_DEBUG("TWM Enabled, skip idle off\n");
-		return rc;
-	}
 	mutex_lock(&panel->panel_lock);
 	if (!panel->panel_initialized)
 		goto exit;
@@ -6075,10 +6051,6 @@ int dsi_panel_disable(struct dsi_panel *panel)
 	if (iris_is_dual_supported() && panel->is_secondary)
 		return rc;
 #endif
-	if (panel->is_twm_en) {
-		DSI_DEBUG("TWM Enabled, skip panel disable\n");
-		return rc;
-	}
 	mutex_lock(&panel->panel_lock);
 
 	/* Avoid sending panel off commands when ESD recovery is underway */
