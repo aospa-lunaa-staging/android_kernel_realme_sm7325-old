@@ -1195,9 +1195,9 @@ static int fts_enable_black_gesture(struct chip_data_ft3518 *ts_data,
 {
 	int i = 0;
 	int ret = 0;
-	int config1 = 0xff;
-	int config2 = 0xff;
-	int config4 = 0xff;
+	int config1 = 0x50;
+	int config2 = 0xf8;
+	int config4 = 0xc1;
 
 	TPD_INFO("MODE_GESTURE, write 0xD0=%d", enable);
 
@@ -2084,11 +2084,13 @@ static void fts_enable_gesture_mask(void *chip_data, uint32_t enable)
 	struct chip_data_ft3518 *ts_data = (struct chip_data_ft3518 *)chip_data;
 
 	if (enable) {
-		config1 = 0xff;
-		config2 = 0xff;
-		config4 = 0xff;
+		config1 = 0x26;
+		config2 = 0x5D;
+		config4 = 0x11;
 	} else if (!enable) {
-
+		config1 = 0x26;
+		config2 = 0x5D;
+		config4 = 0x11;
 	}
 	ret = touch_i2c_write_byte(ts_data->client, FTS_REG_GESTURE_CONFIG1, config1);
 	if (ret < 0) {
