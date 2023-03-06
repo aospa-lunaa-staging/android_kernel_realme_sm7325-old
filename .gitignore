@@ -154,3 +154,12 @@ arch/arm/boot/dts/vendor
 #Ignoring Android.bp link file
 #
 Android.bp
+
+# Toolchains
+work/
+
+# Final output of kernel zip
+topaz*.zip
+
+# Kernel building script
+buildkernel.sh
