@@ -2938,7 +2938,7 @@ static int battery_psy_get_prop(struct power_supply *psy,
 			} else if (!chip->authenticate) {
 				pval->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
 			} else {
-				pval->intval = chip->prop_status;
+				pval->intval = chip->prop_status == POWER_SUPPLY_STATUS_NOT_CHARGING ? POWER_SUPPLY_STATUS_DISCHARGING : chip->prop_status;
 			}
 			if (oplus_wpc_get_online_status())
 				pre_batt_status = pval->intval;
@@ -5909,7 +5909,7 @@ static int oplus_usbtemp_monitor_main_new_method(void *data)
 	struct timespec curr_range_change_first_time;
 	struct timespec curr_range_change_last_time;
 	bool usbtemp_first_time_in_curr_range = false;
-	static int current_read_count = 0;
+	static current_read_count = 0;
 
 	pr_err("[oplus_usbtemp_monitor_main_new_method]:run first!");
 
@@ -6858,7 +6858,7 @@ int oplus_get_charger_cycle(void)
 	return cycle_count;
 }
 
-int oplus_adsp_voocphy_get_enable(void)
+int oplus_adsp_voocphy_get_enable()
 {
 	int rc = 0;
 	struct battery_chg_dev *bcdev = NULL;

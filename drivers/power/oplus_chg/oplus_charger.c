@@ -2444,11 +2444,11 @@ int oplus_chg_init(struct oplus_chg_chip *chip)
 #ifndef CONFIG_OPLUS_CHG_OOS
 // #ifdef CONFIG_FB nick.hu todo
 	chip->chg_fb_notify.notifier_call = fb_notifier_callback;
-#ifdef CONFIG_DRM_MSM
+#ifdef CONFIG_QCOM_KGSL
 	rc = msm_drm_register_client(&chip->chg_fb_notify);
 #else
 	rc = fb_register_client(&chip->chg_fb_notify);
-#endif /*CONFIG_DRM_MSM*/
+#endif /*CONFIG_QCOM_KGSL*/
 	if (rc) {
 		pr_err("Unable to register chg_fb_notify: %d\n", rc);
 	}
@@ -4047,6 +4047,8 @@ static void oplus_chg_set_charging_current(struct oplus_chg_chip *chip)
 		return;
 	}
 #endif
+	if(charging_current == 0)
+		charger_xlog_printk(CHG_LOG_CRTI, "set charging_current = 0\n");
 	chip->chg_ops->charging_current_write_fast(charging_current);
 }
 
@@ -4656,7 +4658,7 @@ void oplus_chg_turn_off_charging(struct oplus_chg_chip *chip)
 #endif /* OPLUS_CHG_OP_DEF */
 
 	chip->chg_ops->charging_disable();
-	/*charger_xlog_printk(CHG_LOG_CRTI, "[BATTERY] oplus_chg_turn_off_charging !!\n");*/
+	charger_xlog_printk(CHG_LOG_CRTI, "[BATTERY] oplus_chg_turn_off_charging,tbatt_status =%d !!\n", chip->tbatt_status);
 }
 /*
 static int oplus_chg_check_suspend_or_disable(struct oplus_chg_chip *chip)
@@ -5180,7 +5182,7 @@ static bool oplus_chg_check_time_is_good(struct oplus_chg_chip *chip)
 
 #ifndef CONFIG_OPLUS_CHG_OOS
 #ifdef OPLUS_CHG_OP_DEF //CONFIG_FB nick.hu todo
-#ifdef CONFIG_DRM_MSM
+#ifdef CONFIG_QCOM_KGSL
 static int fb_notifier_callback(struct notifier_block *nb,
 		unsigned long event, void *data)
 {
@@ -5250,7 +5252,7 @@ static int fb_notifier_callback(struct notifier_block *nb,
 	}
 	return 0;
 }
-#endif /* CONFIG_DRM_MSM */
+#endif /* CONFIG_QCOM_KGSL */
 
 void oplus_chg_set_allow_switch_to_fastchg(bool allow)
 {
@@ -5663,6 +5665,7 @@ void oplus_chg_variables_reset(struct oplus_chg_chip *chip, bool in)
 #else
 		chip->mmi_chg = 1;
 #endif
+		charger_xlog_printk(CHG_LOG_CRTI, "set mmi_chg = [%d].\n", chip->mmi_chg);
 	}
 #endif //SELL_MODE
 	chip->unwakelock_chg = 0;

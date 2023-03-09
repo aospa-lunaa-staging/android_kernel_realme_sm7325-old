@@ -17,7 +17,7 @@
 #include <linux/oem/project_info.h>
 #include <linux/oem/oplus_chg.h>
 #else
-#include <soc/oplus/device_info.h>
+#include <soc/oppo/device_info.h>
 #include <soc/oplus/system/oplus_project.h>
 #include <linux/oplus_chg.h>
 #endif

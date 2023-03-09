@@ -781,7 +781,7 @@ static int oplus_chg_intf_usb_set_prop(struct oplus_chg_mod *ocm,
 				rc = -EINVAL;
 				pr_err("unwakelock testing , this test not allowed.\n");
 			} else {
-				pr_info("disable charge\n");
+				pr_err("disable charge\n");
 				chip->chg_ops->debug_disable_chg(true);
 				chip->mmi_chg = 0;
 				oplus_chg_turn_off_charging(chip);
@@ -807,7 +807,7 @@ static int oplus_chg_intf_usb_set_prop(struct oplus_chg_mod *ocm,
 				if (usb_chg_enable) {
 					pr_debug("usb charge is enabled\n");
 				} else {
-					pr_info("enable charge\n");
+					pr_err("enable charge\n");
 					chip->chg_ops->debug_disable_chg(false);
 					chip->mmi_chg = 1;
 					if (chip->mmi_fastchg == 0) {
@@ -825,7 +825,8 @@ static int oplus_chg_intf_usb_set_prop(struct oplus_chg_mod *ocm,
 		pr_err("%s Vbus!\n", (bool)pval->intval ? "Disconnect" : "Connect");
 		break;
 	case OPLUS_CHG_PROP_OTG_SWITCH:
-		chip->otg_switch = (bool)pval->intval && chip->chg_ops->otg_set_switch((bool)pval->intval);
+		chip->otg_switch = chip->chg_ops->otg_set_switch((bool)pval->intval);
+		chip->otg_switch &= (bool)pval->intval;
 		pr_err("%s set otg switch!\n", chip->otg_switch ? "Enable" : "Disable");
 		break;
 #ifndef CONFIG_OPLUS_CHG_OOS
@@ -1192,7 +1193,7 @@ static int oplus_chg_intf_usb_changed_notifier_call(struct notifier_block *nb,
 
 static int oplus_chg_intf_mmi_chg_enable(struct oplus_chg_chip *chip, bool en)
 {
-	pr_info("set mmi_chg = [%d].\n", en);
+	pr_err("set mmi_chg = [%d].\n", en);
 	chip->charging_suspend = !en;
 	if (!en) {
 		if(chip->unwakelock_chg == 1) {
@@ -1420,7 +1421,11 @@ static int oplus_chg_intf_batt_get_prop(struct oplus_chg_mod *ocm,
 			pval->intval = oplus_chg_comm_get_batt_status(oplus_dev->comm_ocm);
 		} else {
 			if (!usb_online && !wls_online) {
+#ifdef 	CONFIG_OPLUS_CHG_OOS
 				pval->intval = POWER_SUPPLY_STATUS_DISCHARGING;
+#else
+				pval->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
+#endif
 			} else if ((oplus_chg_show_warp_logo_ornot() == 1) ||
 				   oplus_warp_ignore_event() ||
 				   oplus_dev->icon_debounce) {
@@ -1564,11 +1569,7 @@ static int oplus_chg_intf_batt_get_prop(struct oplus_chg_mod *ocm,
 		pval->intval = 5000;
 		break;
 	case OPLUS_CHG_PROP_TIME_TO_FULL_NOW:
-		rc = oplus_gauge_get_batt_ttf();
-		if (rc < 0)
-			pval->intval = -1;
-		else
-			pval->intval = rc;
+		pval->intval = 5000;
 		break;
 	case OPLUS_CHG_PROP_TIME_TO_EMPTY_AVG:
 		pval->intval = 5000;
@@ -1782,7 +1783,7 @@ static int oplus_chg_intf_batt_set_prop(struct oplus_chg_mod *ocm,
 		oplus_dev->debug_soc = pval->intval;
 		break;
 	case OPLUS_CHG_PROP_MMI_CHARGING_ENABLE:
-		pr_info("set mmi_chg = [%d].\n", pval->intval);
+		pr_err("set mmi_chg = [%d].\n", pval->intval);
 		rc = oplus_chg_intf_mmi_chg_enable(chip, !!pval->intval);
 		break;
 	case OPLUS_CHG_PROP_BATTERY_NOTIFY_CODE:

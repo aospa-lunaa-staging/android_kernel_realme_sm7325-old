@@ -836,7 +836,7 @@ int oplus_battery_get_property(struct power_supply *psy,
 				} else if (!chip->authenticate) {
 					val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
 				} else {
-					val->intval = chip->prop_status;
+					val->intval = chip->prop_status == POWER_SUPPLY_STATUS_NOT_CHARGING ? POWER_SUPPLY_STATUS_DISCHARGING : chip->prop_status;
 				}
 				if (oplus_wpc_get_online_status() || oplus_chg_is_wls_present())
 					pre_batt_status = val->intval;
@@ -6915,7 +6915,7 @@ static bool oplus_chg_check_time_is_good(struct oplus_chg_chip *chip)
 	}
 }
 
-#if IS_ENABLED(CONFIG_DRM_MSM) || IS_ENABLED(CONFIG_DRM_OPLUS_NOTIFY)
+#if IS_ENABLED(CONFIG_QCOM_KGSL) || IS_ENABLED(CONFIG_DRM_OPLUS_NOTIFY)
 static int fb_notifier_callback(struct notifier_block *nb,
 		unsigned long event, void *data)
 {
@@ -9509,7 +9509,7 @@ static void oplus_chg_update_ui_soc(struct oplus_chg_chip *chip)
 	} else {
 		cnt = 0;
 		full_cnt = 0;
-		chip->prop_status = POWER_SUPPLY_STATUS_DISCHARGING;
+		chip->prop_status = POWER_SUPPLY_STATUS_NOT_CHARGING;
 		soc_up_count = 0;
 		allow_uisoc_down = false;
 		if (chip->smooth_soc <= chip->ui_soc || vbatt_too_low) {
@@ -11732,7 +11732,7 @@ static void oplus_chg_reset_adapter_work(struct work_struct *work) {
 	}
 }
 
-void oplus_chg_turn_on_charging_in_work(void)
+void oplus_chg_turn_on_charging_in_work()
 {
 	if (g_charger_chip)
 		schedule_delayed_work(&g_charger_chip->turn_on_charging_work, 0);
