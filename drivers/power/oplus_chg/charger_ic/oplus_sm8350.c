@@ -1169,8 +1169,10 @@ static void oplus_charge_status_check_work(struct work_struct *work)
 			usb_present = !!pval.intval;
 	}
 
-	if (usb_present && !chip->mmi_chg)
+	if (usb_present && !chip->mmi_chg) {
+		pr_err("mmi_chg disable charge\n");
 		smbchg_charging_disable();
+	}
 }
 
 static void battery_chg_subsys_up_work(struct work_struct *work)
@@ -1805,7 +1807,7 @@ static int smbchg_set_fastchg_current_raw(int current_ma)
 	pst = &bcdev->ocm_list[OCM_TYPE_BATTERY];
 
 	if (chip->mmi_chg == 0) {
-		pr_info("mmi_chg, set fcc to 0\n");
+		pr_err("mmi_chg, set fcc to 0\n");
 		current_ma = 0;
 	}
 
